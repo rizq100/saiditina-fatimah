@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Sekolah IQRIZ</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+color:white;
+height:100vh;
+overflow:hidden;
+transition:0.3s;
+}
+
+body.darkmode{
+background:linear-gradient(135deg,#020617,#111827,#000000);
+}
+
+.screen{
+display:none;
+width:100vw;
+height:100vh;
+overflow:auto;
+padding:15px;
+}
+
+.active{
+display:block;
+}
+
+.container{
+max-width:430px;
+margin:auto;
+background:rgba(255,255,255,0.1);
+padding:20px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+margin-top:20px;
+}
+
+body.darkmode .container{
+background:rgba(0,0,0,0.4);
+}
+
+h1,h2,h3{
+text-align:center;
+margin-bottom:15px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+margin-top:10px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+margin-top:10px;
+background:white;
+color:#1e3a8a;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#dbeafe;
+}
+
+body.darkmode button{
+background:#1e40af;
+color:white;
+}
+
+.card{
+background:rgba(255,255,255,0.1);
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+}
+
+.toast{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#22c55e;
+padding:10px 20px;
+border-radius:10px;
+display:none;
+z-index:999;
+}
+
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+display:flex;
+background:#0b1b3a;
+}
+
+.nav button{
+flex:1;
+background:transparent;
+color:white;
+border-radius:0;
+font-size:12px;
+}
+
+iframe{
+width:100%;
+height:300px;
+border:none;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="screen active" id="login">
+<div class="container">
+
+<h1>🏫 Sistem Login Sekolah</h1>
+<h3 style="color:#93c5fd;">✨ Kumpulan IQRIZ ✨</h3>
+
+<select id="type">
+<option value="pelawat">Pelawat</option>
+<option value="pengetua">Pengetua</option>
+</select>
+
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="login()">LOGIN</button>
+
+<p style="text-align:center;margin-top:15px;font-size:13px;">
+Pelawat Password: <b>pelawat</b><br><br>
+Pengetua Username: <b>Azhar</b><br>
+Pengetua Password: <b>pengetua</b>
+</p>
+
+</div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="home">
+<div class="container">
+
+<h2>📊 Dashboard Pelawat</h2>
+
+<div class="card">
+<h3>👋 Selamat Datang</h3>
+<p>Sistem Pelawat & Kantin Sekolah IQRIZ</p>
+</div>
+
+<button onclick="openPage('visitor')">📋 Daftar Pelawat</button>
+<button onclick="openPage('food')">🍔 Order Makanan</button>
+<button onclick="openPage('map')">🗺️ Peta Sekolah</button>
+<button onclick="openPage('ai')">🤖 AI Sekolah</button>
+<button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+<button onclick="logout()">🚪 Logout</button>
+
+</div>
+
+<div class="nav">
+<button onclick="openPage('home')">Home</button>
+<button onclick="openPage('visitor')">Pelawat</button>
+<button onclick="openPage('food')">Food</button>
+</div>
+</div>
+
+<!-- VISITOR -->
+<div class="screen" id="visitor">
+<div class="container">
+
+<h2>📋 Daftar Pelawat</h2>
+
+<input type="text" id="vname" placeholder="Nama Pelawat">
+<input type="text" id="vpurpose" placeholder="Tujuan Datang">
+
+<button onclick="saveVisitor()">Hantar</button>
+
+<div class="card" id="visitorCard" style="display:none;">
+<h3>🪪 Kad Pelawat Digital</h3>
+<p id="cardName"></p>
+<p id="cardPurpose"></p>
+<p id="cardTime"></p>
+<p>✅ Status: Dibenarkan Masuk</p>
+</div>
+<button onclick="openPage('home')">Back</button>
+
+</div>
+</div>
+
+<!-- FOOD -->
+<div class="screen" id="food">
+<div class="container">
+
+<h2>🍔 Makanan Kantin</h2>
+
+<div class="card">
+<h3>Nasi Lemak</h3>
+<button onclick="orderFood('Nasi Lemak')">Order</button>
+</div>
+
+<div class="card">
+<h3>Nasi Goreng</h3>
+<button onclick="orderFood('Nasi Goreng')">Order</button>
+</div>
+
+<div class="card">
+<h3>Mee Goreng</h3>
+<button onclick="orderFood('Mee Goreng')">Order</button>
+</div>
+
+<div class="card">
+<h3>Chicken Chop</h3>
+<button onclick="orderFood('Chicken Chop')">Order</button>
+</div>
+
+<div class="card">
+<h3>Teh Ais</h3>
+<button onclick="orderFood('Teh Ais')">Order</button>
+</div>
+
+<p id="foodMessage" style="margin-top:15px;"></p>
+
+<button onclick="openPage('home')">Back</button>
+
+</div>
+</div>
+
+<!-- AI SEKOLAH -->
+<div class="screen" id="ai">
+<div class="container">
+
+<h2>🤖 AI Sekolah IQRIZ</h2>
+
+<div class="card">
+<p><b>Tanya AI:</b></p>
+<input type="text" id="aiInput" placeholder="Contoh: waktu rehat sekolah">
+<button onclick="askAI()">Tanya AI</button>
+</div>
+
+<div class="card">
+<h3>🧠 Jawapan AI</h3>
+<p id="aiAnswer">AI sedia membantu...</p>
+</div>
+
+<button onclick="openPage('home')">Back</button>
+
+</div>
+</div>
+
+<!-- MAP -->
+<div class="screen" id="map">
+<div class="container">
+
+<h2>🗺️ Peta Sekolah</h2>
+
+<iframe src="https://maps.google.com/maps?q=muar&t=&z=13&output=embed"></iframe>
+
+<button onclick="openPage('home')">Back</button>
+
+</div>
+</div>
+
+<!-- ADMIN -->
+<div class="screen" id="admin">
+<div class="container">
+
+<h2>👨‍💼 Panel Pengetua</h2>
+
+<div class="card">
+<h3>📋 Senarai Pelawat</h3>
+<div id="visitorList">Tiada pelawat</div>
+</div>
+
+<div class="card">
+<h3>🍔 Senarai Order</h3>
+<div id="orderList">Tiada order</div>
+</div>
+
+<div class="card">
+<h3>📊 Statistik</h3>
+<div id="stats">0 Data</div>
+</div>
+
+<button onclick="logout()">🚪 Logout</button>
+
+</div>
+</div>
+
+<script>
+
+let visitors = JSON.parse(localStorage.getItem('visitors')) || [];
+let foodOrders = JSON.parse(localStorage.getItem('foodOrders')) || [];
+
+function showToast(message){
+const toast = document.getElementById('toast');
+toast.innerText = message;
+toast.style.display = 'block';
+
+setTimeout(function(){
+toast.style.display = 'none';
+},2000);
+}
+
+function openPage(id){
+document.querySelectorAll('.screen').forEach(function(screen){
+screen.classList.remove('active');
+});
+
+document.getElementById(id).classList.add('active');
+}
+
+function login(){
+
+const type = document.getElementById('type').value;
+const username = document.getElementById('username').value.toLowerCase();
+const password = document.getElementById('password').value;
+
+if(type === 'pelawat'){
+
+if(username !== '' && password === 'pelawat'){
+openPage('home');
+showToast('Login Pelawat Berjaya');
+}else{
+alert('Login Pelawat Salah');
+}
+
+}
+
+if(type === 'pengetua'){
+
+const admins = ['azhar'];
+
+if(admins.includes(username) && password === 'pengetua'){
+openPage('admin');
+showToast('Login Pengetua Berjaya');
+}else{
+alert('Login Pengetua Salah');
+}
+
+}
+}
+
+function logout(){
+openPage('login');
+}
+
+function saveVisitor(){
+
+const name = document.getElementById('vname').value;
+const purpose = document.getElementById('vpurpose').value;
+
+if(name === '' || purpose === ''){
+alert('Isi semua maklumat');
+return;
+}
+
+const currentTime = new Date().toLocaleTimeString();
+
+visitors.push({
+name:name,
+purpose:purpose,
+time:currentTime
+});
+
+localStorage.setItem('visitors', JSON.stringify(visitors));
+
+updateAdmin();
+
+showToast('Pelawat Disimpan');
+
+// Kad Pelawa
+}
+
+function orderFood(food){
+
+foodOrders.push(food);
+
+localStorage.setItem('foodOrders', JSON.stringify(foodOrders));
+
+document.getElementById('foodMessage').innerText = 'Order ' + food + ' berjaya';
+
+updateAdmin();
+
+showToast('Order Berjaya');
+}
+
+function updateAdmin(){
+
+let visitorHTML = '';
+
+visitors.forEach(function(v){
+visitorHTML += '👤 ' + v.name + ' - ' + v.purpose + '<br>';
+});
+
+let orderHTML = '';
+
+foodOrders.forEach(function(food){
+orderHTML += '🍔 ' + food + '<br>';
+});
+
+document.getElementById('visitorList').innerHTML = visitorHTML || 'Tiada pelawat';
+document.getElementById('orderList').innerHTML = orderHTML || 'Tiada order';
+
+document.getElementById('stats').innerHTML =
+'Jumlah Pelawat: ' + visitors.length +
+'<br><br>Jumlah Order: ' + foodOrders.length;
+}
+
+function toggleDarkMode(){
+document.body.classList.toggle('darkmode');
+}
+
+function askAI(){
+
+const question = document.getElementById('aiInput').value.toLowerCase();
+const answer = document.getElementById('aiAnswer');
+
+if(question.includes('waktu')){
+answer.innerText = 'Waktu sekolah bermula 7:30 pagi hingga 1:30 petang.';
+}
+else if(question.includes('kantin')){
+answer.innerText = 'Kantin sekolah dibuka semasa waktu rehat.';
+}
+else if(question.includes('pengetua')){
+answer.innerText = 'Pengetua sekolah ialah Azhar.';
+}
+else if(question.includes('lokasi')){
+answer.innerText = 'Sekolah berada di kawasan Muar, Johor.';
+}
+else{
+answer.innerText = 'AI Sekolah belum mempunyai jawapan untuk soalan itu.';
+}
+
+showToast('AI memberi jawapan');
+}
+
+updateAdmin();
+
+</script>
+
+</body>
+</html>
